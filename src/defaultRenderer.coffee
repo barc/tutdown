@@ -16,7 +16,6 @@ class DefaultRenderer
     _.defaults @options,
       docStylesheetFile: __dirname + '/../lib/assets/style.css'
       docScriptFile: __dirname + '/../src/assets/tabs.js'
-      #docLayoutFile: __dirname + '/../src/templates/html.hbs'
       exampleLayoutFile: __dirname + '/../src/templates/example.hbs'
 
     @docScript = fs.readFileSync(@options.docScriptFile, "utf8")
