@@ -1,0 +1,88 @@
+@import './variables.less';
+@import './normalize.less';
+@import './grid.less';
+@import "./highlight.less";
+@import './tabs.less';
+
+//////////
+// GRID //
+//////////
+
+// Specify the number of columns and set column and gutter widths
+//@columns: 12;
+//@column-width: 60;
+//@gutter-width: 20;
+
+// Remove the definition below for a pixel-based layout
+//@total-width: 100%;
+
+.container { max-width: 90em; }
+
+/* you only need width to set up columns; all columns are 100%-width by default, so we start
+   from a one-column mobile layout and gradually improve it according to available screen space */
+
+@media only screen and (min-width: 34em) {
+        .feature, .info { width: 50%; }
+}
+
+@media only screen and (min-width: 54em) {
+        .content { width: 80.00%; }
+        .sidebar { width: 20.00%; }
+        .info    { width: 100%;   }
+}
+
+@media only screen and (min-width: 76em) {
+        .content { width: 85.00%; } /* 7/12 */
+        .sidebar { width: 15.00%; } /* 5/12 */
+}
+
+
+////////////
+// LAYOUT //
+////////////
+
+// header
+header#top {
+  background-color: black;
+  padding: 0.2em;
+}
+
+
+// main column & sidebar
+#maincolumn {
+}
+#sidebar {
+}
+
+/////////// GENERAL
+
+p, a, td {
+  color: #444;
+}
+
+h1, h2, h3, h4, h5 {
+  color: #222;
+}
+
+.logo {
+  font-family: "Helvetica Neue", "Helvetica", verdana, sans;
+  color: #444;
+  font-size: 32px;
+  background-color: black;
+  margin-left: 1em;
+  border: double 3px #444;
+  padding: 0.2em;
+}
+
+
+//
+iframe.result {
+  width: 100%;
+  min-height: 200px;
+  height: auto;
+  border: dashed 1px @codeBorderColor;
+}
+
+code {
+  font-family: consolas, menlo, "ubuntu mono", monospaced;
+}

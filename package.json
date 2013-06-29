@@ -1,0 +1,31 @@
+{
+  "name": "tutdown",
+  "version": "0.0.0",
+  "description": "Tutdown is Markdown for tutorials.",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "dependencies": {
+    "async": "~0.2.8",
+    "commander": "~1.1.1",
+    "highlight.js": "~7.3.0",
+    "underscore": "~1.4.4",
+    "temp": "~0.5.0",
+    "marked": "git://github.com/mgutz/marked#gfm-extra",
+    "handlebars": "~1.0.11",
+    "underscore.string": "~2.3.1",
+    "funcd": "~0.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "bin": {
+    "tutdown": "bin/tutdown"
+  }
+}

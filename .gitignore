@@ -1,0 +1,6 @@
+build/
+example.html
+.DS_Store
+.idea/
+node_modules/
+_assets/
