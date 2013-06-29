@@ -15,7 +15,9 @@
     "marked": "git://github.com/mgutz/marked#gfm-extra",
     "handlebars": "~1.0.11",
     "underscore.string": "~2.3.1",
-    "funcd": "~0.1.2"
+    "funcd": "~0.1.2",
+    "dox": "~0.4.3",
+    "coffee-script": "~1.6.3"
   },
   "devDependencies": {},
   "scripts": {
