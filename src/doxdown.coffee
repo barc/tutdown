@@ -23,18 +23,18 @@ exports.render = (source, options = {}, cb) ->
   # fs.writeFileSync "dox.json", JSON.stringify(json)
   exports.renderFromDoxJSON json, options, cb
 
-
 exports.renderFromDoxJSON = (json, options = {}, cb) ->
   if typeof options is "function"
     cb = options
     options = {}
-  html = Funcd.render(createHTML, {json, options})
-  cb? null, html
+  content = Funcd.render(createContent, {json, options})
+  nav = Funcd.render(createNav, {json, options})
+  cb? null, {content, nav}
 
-createHTML = (t, data) ->
+createNav = (t, data) ->
   {json, options} = data
   options ?= {}
-  {navHeaderTemplate, navFooterTemplate, contentHeaderTemplate, contentFooterTemplate} = options
+  {navHeaderTemplate, navFooterTemplate} = options
 
   sections = getSections(json)
 
@@ -60,6 +60,14 @@ createHTML = (t, data) ->
 
     if navFooterTemplate
       t.raw _.template(navFooterTemplate, data)
+
+
+createContent = (t, data) ->
+  {json, options} = data
+  options ?= {}
+  {contentHeaderTemplate, contentFooterTemplate} = options
+
+  sections = getSections(json)
 
   t.div id:"content", ->
 

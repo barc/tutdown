@@ -86,7 +86,7 @@ class DefaultRenderer
       script = npath.join(assetsDirname, 'tutdown.js')
       fs.writeFileSync script, @docScript
 
-    cb null, _.template(@docLayout, {document: html, script, navLinks})
+    cb null, html
 
 
   _render: (tokens, sections, cb) ->
