@@ -43,12 +43,15 @@ createNav = (t, data) ->
     headerItemName = headerItem.ctx.name
     t.h2 ->
       t.a href:"##{headerItemName}", headerItemName
-    t.ul ->
+    t.ul class:"methods", ->
       for item in section.slice(1)
         if item.ctx
+          isClassMethod = item.ctx.string.indexOf('.prototype.') < 0
           itemName = item.ctx.name
           t.li ->
-            t.a href:"##{headerItemName}-#{itemName}", ".#{item.ctx.name}"
+            attrs = href:"##{headerItemName}-#{item.ctx.name}"
+            attrs.class = "static" if isClassMethod
+            t.a attrs, itemName
 
 createContent = (t, data) ->
   {json, options} = data
@@ -67,8 +70,12 @@ createContent = (t, data) ->
       t.raw headerItem.description.full
       for item in section.slice(1)
         if item.ctx
+          isClassMethod = item.ctx.string.indexOf('.prototype.') < 0
           itemName = item.ctx.name
-          t.h3 id:"#{headerItemName}-#{itemName}", ->
+          attrs = id:"#{headerItemName}-#{itemName}"
+          if isClassMethod
+            attrs.class = "static"
+          t.h3 attrs, ->
             t.text itemName
             t.span class:"caption", getCaption(item, headerItem)
         t.raw item.description.full
