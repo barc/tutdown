@@ -107,10 +107,14 @@ class DefaultRenderer
 
 
   # Renders from a string, returning an HTML string
+  #
+  # @param {Object} options = {
+  #   {String} assetPrefix Prefix all assets.
+  # }
   render: (markdown, cb) ->
     self = @
 
-    tutdown = new Tutdown()
+    tutdown = new Tutdown(@options)
     tutdown.process markdown, (err, tokens, sections) ->
       return cb(err) if err
       self._render tokens, sections, cb

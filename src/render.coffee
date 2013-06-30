@@ -16,6 +16,7 @@ rawToken = (text) ->
 #
 # TODO output as separate files for server side testing
 renderAssets = (id, assets, layout, cb) ->
+  id = id.toLowerCase()
   assetId = 0
   tabLinks = ""
   tabDivs = ""

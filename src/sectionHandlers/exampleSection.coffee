@@ -16,9 +16,6 @@ endSectionTemplate = """
 beginAssetSubTemplate = """<div id="{{{id}}}-{{{name}}}tab" class="tab_content">"""
 endAssetSubTemplate = """</div>"""
 
-# Use to create a unique id for this example
-exampleId = 0
-
 # Creates a raw token that is not escaped by marked
 rawToken = (text) ->
   type: "html"
@@ -27,8 +24,7 @@ rawToken = (text) ->
 
 # Process an example section
 class ExampleSection
-  constructor: (token) ->
-    @id = "ex" + exampleId++
+  constructor: (@id, token) ->
     @tokens = []
     @tokens.push rawToken(_.template(beginSectionTemplate, id: @id))
     @currentAsset = null
@@ -39,8 +35,8 @@ class ExampleSection
     @assets = {}
 
 
-  @begin: (token) ->
-    section = new ExampleSection(token)
+  @begin: (id, token) ->
+    section = new ExampleSection(id, token)
 
   # Begin asset
   #

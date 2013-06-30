@@ -19,7 +19,9 @@ sectionHandlers =
 
 # Markdown for tutorials
 class Tutdown
-  constructor: ->
+  constructor: (@options={}) ->
+    if !@options.assetPrefix
+      throw new Error('options.assetPrefix is REQUIRED')
     @examples = {}
     @docScript = ""
 
@@ -48,13 +50,16 @@ class Tutdown
     tokenStack = []
     section = null
     sections = {}
+    exampleCounter = 0
 
     processToken = (token, cb) =>
       {type, text, lang} = token
 
       if type == "paragraph" && matches = text.match(beginSection)
         klass = matches[1]
-        section = sectionHandlers[klass].begin(token)
+        id = @options.assetPrefix + exampleCounter
+        exampleCounter += 1
+        section = sectionHandlers[klass].begin(id, token)
         cb()
       else if type == "paragraph" && matches = text.match(endSection)
         section.end token, (err) =>
@@ -66,7 +71,6 @@ class Tutdown
             text: "{{{sections.#{section.id}.html}}}"
             type: "text"
             escaped: true
-
           section = null
           cb()
       else if section
