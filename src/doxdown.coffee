@@ -38,29 +38,17 @@ createNav = (t, data) ->
 
   sections = getSections(json)
 
-  t.div id:"nav", ->
-    t.div id:"nav-background"
-
-    if navHeaderTemplate
-      t.raw _.template(navHeaderTemplate, data)
-
-    for section in sections
-      headerItem = _.first(section)
-      headerItemName = headerItem.ctx.name
-      t.div class:"nav-title", ->
-        t.a href:"##{headerItemName}", headerItemName
-      t.ul ->
-        for item in section.slice(1)
-          if item.ctx
-            itemName = item.ctx.name
-            t.li ->
-              t.a href:"##{headerItemName}-#{itemName}", ->
-                t.span class:"light-text", "."
-                t.text item.ctx.name
-
-    if navFooterTemplate
-      t.raw _.template(navFooterTemplate, data)
-
+  for section in sections
+    headerItem = _.first(section)
+    headerItemName = headerItem.ctx.name
+    t.h2 ->
+      t.a href:"##{headerItemName}", headerItemName
+    t.ul ->
+      for item in section.slice(1)
+        if item.ctx
+          itemName = item.ctx.name
+          t.li ->
+            t.a href:"##{headerItemName}-#{itemName}", ".#{item.ctx.name}"
 
 createContent = (t, data) ->
   {json, options} = data
@@ -69,29 +57,22 @@ createContent = (t, data) ->
 
   sections = getSections(json)
 
-  t.div id:"content", ->
+  for section in sections
+    t.section ->
+      headerItem = _.first(section)
+      headerItemName = headerItem.ctx.name
+      t.h2 id:"#{headerItemName}", ->
+        t.text headerItemName
+        t.span class:"caption", getCaption(headerItem, headerItem)
+      t.raw headerItem.description.full
+      for item in section.slice(1)
+        if item.ctx
+          itemName = item.ctx.name
+          t.h3 id:"#{headerItemName}-#{itemName}", ->
+            t.text itemName
+            t.span class:"caption", getCaption(item, headerItem)
+        t.raw item.description.full
 
-    if contentHeaderTemplate
-      t.raw _.template(contentHeaderTemplate, data)
-
-    for section in sections
-      t.section ->
-        headerItem = _.first(section)
-        headerItemName = headerItem.ctx.name
-        t.h2 id:"#{headerItemName}", ->
-          t.text headerItemName
-          t.span class:"caption", getCaption(headerItem, headerItem)
-        t.raw headerItem.description.full
-        for item in section.slice(1)
-          if item.ctx
-            itemName = item.ctx.name
-            t.h3 id:"#{headerItemName}-#{itemName}", ->
-              t.text itemName
-              t.span class:"caption", getCaption(item, headerItem)
-          t.raw item.description.full
-
-    if contentFooterTemplate
-      t.raw _.template(contentFooterTemplate, data)
 
 
 getSections = (json) ->
