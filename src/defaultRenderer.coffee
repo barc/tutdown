@@ -50,6 +50,7 @@ class DefaultRenderer
 
       render.renderExample section, exampleLayout, (err, result) ->
         return cb(err) if err
+        exampleRegex = /^{{{EXAMPLE([^}]*)}}}/
 
         [token, page] = result
         filename = npath.join(dirname, "#{section.id}.html")
@@ -58,7 +59,7 @@ class DefaultRenderer
 
           # replace {{{EXAMPLE}}} token or append it
           found = _.find section.tokens, (tok) ->
-            tok.text == '{{{EXAMPLE}}}' and tok.type != 'code'
+            tok.type != 'code' and tok.text?.match(exampleRegex)
 
           if found
             _.extend found, token

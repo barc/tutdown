@@ -12,7 +12,7 @@ beautifyHtml = require('js-beautify').html
 # Render assets
 #
 # TODO output as separate files for server side testing
-renderAssets = (id, assets, layout, cb) ->
+renderAssets = (id, assets, layout, iframeAttributes, cb) ->
   id = id.toLowerCase()
   assetId = 0
   tabLinks = ""
@@ -55,7 +55,7 @@ renderAssets = (id, assets, layout, cb) ->
     id: id
     name: "result"
     idname: str.slugify(id + "result")
-    content: """<iframe id="#{id}" src="_assets/#{id}.html" class="result"></iframe>"""
+    content: """<iframe id="#{id}" src="_assets/#{id}.html" class="result" #{iframeAttributes}></iframe>"""
   })
 
   codeTemplate = """<pre><code class="language-{{{lang}}}">{{{code}}}</code></pre>"""
@@ -95,11 +95,24 @@ renderAssets = (id, assets, layout, cb) ->
 # The return script must be executed by the main page to load the iframe.
 exports.renderExample = (section, layout, cb) ->
   {id, assets} = section
-  renderAssets id, assets, layout, (err, html) ->
+  exampleRegex = /^{{{EXAMPLE([^}]*)}}}/
+  iframeAttributes = ""
+
+  # replace {{{EXAMPLE}}} token or append it
+  _.find section.tokens, (tok) ->
+    result = false
+    if tok.type != 'code'
+      matches = tok.text?.match(exampleRegex)
+      if matches
+        iframeAttributes = matches[1]
+        result = true
+    result
+
+  renderAssets id, assets, layout, iframeAttributes, (err, html) ->
     return cb(err) if (err)
 
     token = utils.rawToken(html)
-    page = _.template(layout, {markup: assets['markup.html'], id})
+    page = _.template(layout, {markup: assets['markup.html'], iframeAttributes, id})
     cb null, [token, page]
 
 

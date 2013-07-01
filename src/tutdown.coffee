@@ -60,7 +60,7 @@ class Tutdown
       {type, text, lang} = token
 
       if type == "heading"
-        token._id = "h-" + str.slugify(token.text)
+        token._attributes = "id='h-#{str.slugify(token.text)}'"
 
       if type == "paragraph" && matches = text.match(beginSection)
         klass = matches[1]
