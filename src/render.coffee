@@ -13,6 +13,7 @@ beautifyHtml = require('js-beautify').html
 #
 # TODO output as separate files for server side testing
 renderAssets = (id, assets, layout, iframeAttributes, cb) ->
+  idOrig = id
   id = id.toLowerCase()
   assetId = 0
   tabLinks = ""
@@ -55,7 +56,7 @@ renderAssets = (id, assets, layout, iframeAttributes, cb) ->
     id: id
     name: "result"
     idname: str.slugify(id + "result")
-    content: """<iframe id="#{id}" src="_assets/#{id}.html" class="result" #{iframeAttributes}></iframe>"""
+    content: """<iframe id="#{id}" src="_assets/#{idOrig}.html" class="result" #{iframeAttributes}></iframe>"""
   })
 
   codeTemplate = """<pre><code class="language-{{{lang}}}">{{{code}}}</code></pre>"""
