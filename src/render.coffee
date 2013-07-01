@@ -5,6 +5,9 @@ utils = require("./utils")
 codeFilter = require("./codeFilter")
 marked = require("marked")
 fs = require("fs")
+beautifyJs = require('js-beautify')
+beautifyCss = require('js-beautify').css
+beautifyHtml = require('js-beautify').html
 
 # Render assets
 #
@@ -71,11 +74,14 @@ renderAssets = (id, assets, layout, cb) ->
         cb()
 
     if name is "code" or str.endsWith(name, ".js")
+      content = beautifyJs(content, indent_size: 2)
       content = codeFilter(content, "js", saveResult('js'))
     else if name  is "markup" or str.endsWith(name, ".html")
       content = _.template(layout, {markup: content, id})
+      content = beautifyHtml(content, indent_size: 2)
       content = codeFilter(content, "html", saveResult('html'))
     else if name is "style" or str.endsWith(name, ".css")
+      content = beautifyCss(content, indent_size: 2)
       content = codeFilter(content, "css", saveResult("css"))
 
   async.forEach Object.keys(assets), processAsset, (err) ->

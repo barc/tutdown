@@ -17,7 +17,8 @@
     "underscore.string": "~2.3.1",
     "funcd": "~0.1.2",
     "dox": "~0.4.3",
-    "coffee-script": "~1.6.3"
+    "coffee-script": "~1.6.3",
+    "js-beautify": "~1.4.0"
   },
   "devDependencies": {},
   "scripts": {
