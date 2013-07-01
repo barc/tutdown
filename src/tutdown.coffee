@@ -8,6 +8,7 @@ fs = require("fs")
 handlebars = require("handlebars")
 npath = require("path")
 render = require("./render")
+str = require("underscore.string")
 
 _.templateSettings =
   interpolate: /{{{(.+?)}}}/g
@@ -43,6 +44,8 @@ class Tutdown
   #
   #   :::END
   #
+  # If a section is not handled, it is converted into  a div.
+  # For example, :::BEGIN foo bar :::END becomes <div class='foo bar'></div>
   processSections: (tokens, cb) ->
     # markers must start with at least three colons, :::
     beginSection = /^:{3,}BEGIN\s+(\w.+)\s*$/
@@ -55,6 +58,10 @@ class Tutdown
 
     processToken = (token, cb) =>
       {type, text, lang} = token
+      console.log "TOKEN", token
+
+      if type == "heading"
+        token._id = "h-" + str.slugify(token.text)
 
       if type == "paragraph" && matches = text.match(beginSection)
         klass = matches[1]
