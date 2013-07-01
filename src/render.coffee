@@ -6,12 +6,6 @@ codeFilter = require("./codeFilter")
 marked = require("marked")
 fs = require("fs")
 
-# Creates a raw token that is not escaped by marked
-rawToken = (text) ->
-  type: "html"
-  pre: true                       # inserts raw text as side-effect
-  text:  text
-
 # Render assets
 #
 # TODO output as separate files for server side testing
@@ -98,7 +92,7 @@ exports.renderExample = (section, layout, cb) ->
   renderAssets id, assets, layout, (err, html) ->
     return cb(err) if (err)
 
-    token = rawToken(html)
+    token = utils.rawToken(html)
     page = _.template(layout, {markup: assets['markup.html'], id})
     cb null, [token, page]
 
@@ -109,7 +103,7 @@ parse = (tokens) ->
     tables: true
     breaks: false
     pedantic: false
-    sanitize: true
+    sanitize: false
     smartLists: true
     langPrefix: "language-"
 

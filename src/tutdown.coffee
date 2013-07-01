@@ -46,11 +46,12 @@ class Tutdown
   processSections: (tokens, cb) ->
     # markers must start with at least three colons, :::
     beginSection = /^:{3,}BEGIN\s+(\w.+)\s*$/
-    endSection = /^:{3,}END\s*$/
+    endSection = /^:{3,}END/
     tokenStack = []
     section = null
     sections = {}
     exampleCounter = 0
+    closeDiv = false
 
     processToken = (token, cb) =>
       {type, text, lang} = token
@@ -59,23 +60,45 @@ class Tutdown
         klass = matches[1]
         id = @options.assetPrefix + exampleCounter
         exampleCounter += 1
-        section = sectionHandlers[klass].begin(id, token)
+        # if there is a section handler process it, else treat it as a div
+        # class
+        if sectionHandlers[klass]
+          section = sectionHandlers[klass].begin(id, token)
+        else
+          token = utils.rawToken("<div class='#{klass}'>")
+          if section
+            section.push token
+          else
+            tokenStack.push token
+          closeDiv = true
         cb()
-      else if type == "paragraph" && matches = text.match(endSection)
-        section.end token, (err) =>
-          return cb(err) if err
-          sections[section.id] = section
 
-          # insert a placeholder for this section
-          tokenStack.push
-            text: "{{{sections.#{section.id}.html}}}"
-            type: "text"
-            escaped: true
-          section = null
+      else if type == "paragraph" && matches = text.match(endSection)
+        if closeDiv
+          token = utils.rawToken('</div>')
+          if section
+            section.push token
+          else
+            tokenStack.push token
+          closeDiv = false
           cb()
+        else
+          section.end token, (err) =>
+            return cb(err) if err
+            sections[section.id] = section
+
+            # insert a placeholder for this section
+            tokenStack.push
+              text: "{{{sections.#{section.id}.html}}}"
+              type: "text"
+              escaped: true
+            section = null
+            cb()
+
       else if section
         section.push token
         cb()
+
       else
         tokenStack.push token
         cb()
@@ -106,7 +129,7 @@ class Tutdown
       tables: true
       breaks: false
       pedantic: false
-      sanitize: true
+      sanitize: false
       smartLists: true
       langPrefix: "language-"
 

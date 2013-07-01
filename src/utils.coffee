@@ -34,3 +34,8 @@ exports.parseCodeArgs = (s, tokens) ->
     result.unshift ""
   result
 
+# Creates a raw token that is not escaped by marked
+exports.rawToken = (text) ->
+  type: "html"
+  pre: true                       # inserts raw text as side-effect
+  text:  text

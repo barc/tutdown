@@ -16,17 +16,11 @@ endSectionTemplate = """
 beginAssetSubTemplate = """<div id="{{{id}}}-{{{name}}}tab" class="tab_content">"""
 endAssetSubTemplate = """</div>"""
 
-# Creates a raw token that is not escaped by marked
-rawToken = (text) ->
-  type: "html"
-  pre: true                       # inserts raw text as side-effect
-  text:  text
-
 # Process an example section
 class ExampleSection
   constructor: (@id, token) ->
     @tokens = []
-    @tokens.push rawToken(_.template(beginSectionTemplate, id: @id))
+    @tokens.push utils.rawToken(_.template(beginSectionTemplate, id: @id))
     @currentAsset = null
     @navLinks = null
 
@@ -45,33 +39,23 @@ class ExampleSection
   beginAsset: (name) ->
     @closeAsset()
     @currentAsset = name
-    rawToken _.template(beginAssetSubTemplate, id: @id, name: name)
+    utils.rawToken _.template(beginAssetSubTemplate, id: @id, name: name)
 
 
   # Closes an asset.
   closeAsset: ->
     if @currentAsset and !@isMeta()
-      @tokens.push rawToken("</div>")
+      @tokens.push utils.rawToken("</div>")
       @currentAsset = null
 
   # End example section.
   end: (token, cb) ->
     @closeAsset()
     that = @
-    token = rawToken("</div>")
+    token = utils.rawToken("</div>")
     that.tokens.push token
     that.tokens = that.preTokens.concat(that.tokens)
     cb()
-
-    # renderUtils.resultContent @id, @assets, (err, result) ->
-    #   return cb(err) if err
-
-    #   [token, that.docScript] = result
-    #   that.tokens.push token
-    #   token = rawToken("</div>")
-    #   that.tokens.push token
-    #   that.tokens = that.preTokens.concat(that.tokens)
-    #   cb()
 
   isMeta: ->
     @currentAsset == ":::meta"
