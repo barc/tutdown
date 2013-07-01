@@ -131,7 +131,7 @@ class Tutdown
       pedantic: false
       sanitize: false
       smartLists: true
-      langPrefix: "language-"
+      langPrefix: ""
 
     options = _.defaults(options, defaults)
     self = @

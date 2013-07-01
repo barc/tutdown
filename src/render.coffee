@@ -105,7 +105,7 @@ parse = (tokens) ->
     pedantic: false
     sanitize: false
     smartLists: true
-    langPrefix: "language-"
+    langPrefix: ""
 
   marked.Parser.parse(tokens, options)
 
