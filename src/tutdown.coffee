@@ -58,7 +58,6 @@ class Tutdown
 
     processToken = (token, cb) =>
       {type, text, lang} = token
-      console.log "TOKEN", token
 
       if type == "heading"
         token._id = "h-" + str.slugify(token.text)
