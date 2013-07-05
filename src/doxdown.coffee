@@ -79,7 +79,7 @@ createNav = (t, data) ->
     t.ul class:"methods", ->
       for item in section.slice(1)
         if item.ctx
-          isClassMethod = item.ctx.string.indexOf('.prototype.') < 0
+          isClassMethod = item.ctx.string.indexOf('.prototype.') < 0 and item.ctx.string.indexOf('this.') < 0
           itemName = item.ctx.name
           t.li ->
             attrs = href:"##{headerItemName}-#{item.ctx.name}"
