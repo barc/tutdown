@@ -13,14 +13,20 @@ exports.renderFromFile = (fileName, options = {}, cb) ->
   options.coffeeScript ?= _.str.endsWith(fileName, ".coffee")
   exports.render source, options, cb
 
-
 exports.render = (source, options = {}, cb) ->
   if typeof options is "function"
     cb = options
     options = {}
-  js = if options.coffeeScript then coffee.compile(source) else source
+  if options.coffeeScript
+    js = coffee.compile(source)
+    if options.commentFiller?
+      js = fixCoffeeComments(js, options.commentFiller)
+      #fs.writeFileSync "fixed.js", js
+  else
+    js = source
+
   json = dox.parseComments(js)
-  # fs.writeFileSync "dox.json", JSON.stringify(json)
+  #fs.writeFileSync "dox.json", JSON.stringify(json, null, 2)
   exports.renderFromDoxJSON json, options, cb
 
 exports.renderFromDoxJSON = (json, options = {}, cb) ->
@@ -30,6 +36,33 @@ exports.renderFromDoxJSON = (json, options = {}, cb) ->
   content = Funcd.render(createContent, {json, options})
   nav = Funcd.render(createNav, {json, options})
   cb? null, {content, nav}
+
+fixCoffeeComments = (source, commentFiller) ->
+  result = []
+  L  = commentFiller.length   # Usually `# ` or `* `
+
+  startIndex = -1
+  for line in _.str.lines(source)
+    if line.match(/^\s+\/\*/)
+      startIndex = line.indexOf('/*')
+      result.push line
+      continue
+
+    if line.match(/^\s+\*\//)
+      result.push line
+      startIndex = -1
+      continue
+
+    if startIndex > -1
+      if line.substring(startIndex, startIndex + 2) == commentFiller
+        result.push line.slice(0, startIndex) + '* ' + line.slice(startIndex+2)
+      else
+        result.push line
+    else
+      result.push line
+
+  result.join "\n"
+
 
 createNav = (t, data) ->
   {json, options} = data
@@ -79,7 +112,6 @@ createContent = (t, data) ->
             t.text itemName
             t.span class:"caption", getCaption(item, headerItem)
         t.raw item.description.full
-
 
 
 getSections = (json) ->
