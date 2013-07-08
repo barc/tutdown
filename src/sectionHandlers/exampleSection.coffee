@@ -2,6 +2,7 @@ utils = require("../utils")
 _ = require('underscore')
 str = require("underscore.string")
 async = require("async")
+Path = require("path")
 
 # Entire section
 beginSectionTemplate = """
@@ -95,51 +96,38 @@ class ExampleSection
         type: "example"
         title: text
 
-    # on special sections, convert to divs
-    if type == "heading" and text == ":::meta"
-      div = @beginAsset(text.toLowerCase())
-      unless @isMeta()
-        @tokens.push div
+    # Code block options preceed the code block and have this signature `:::@`
+    if type == "paragraph" and text.indexOf(':::@') is 0
+      # do not save token, but save the lang for next code block
+      @nextArgs = text.slice(4).trim().split(/\s+/)
+      return
 
-    else if @isMeta()
-      if type == "code"
-        switch lang
-          when "layout"
-            @layoutTemplate = text
-          when "scripts"
-            @preScripts += text
-
-    # collect assets specified by > and >> operators
-    else if type == "code"
-      parts = utils.parseLineArgs(lang)
+    # Collect assets
+    if type == "code"
+      parts = lang.split(/\s+/)
       language = parts[0]
-      args = parts.slice(1) || []
+      extname = Path.extname(language)
+      if extname.length > 0
+        token.lang = language = extname.slice(1)
+
+      args = @nextArgs || parts.slice(1) || []
       noCapture = args.indexOf('--no-capture') > -1
       hide = args.indexOf('--hide') > -1
+      @nextArgs = null
 
-      unless noCapture
-        # new asset
-        idx = args.indexOf(">")
-        if idx > -1 and (name = args[idx+1])
-          @setAsset name, text
+      if !noCapture
+        switch language
+          when "js", "javascript"
+            filename = "script.js"
+          when "css"
+            filename = "style.css"
+          when "html"
+            filename = "markup.html"
+        if filename
+          @appendAsset filename, text
 
-        else
-          ## append asset
-          idx = args.indexOf(">>")
-          if idx > -1 and (name = args[idx+1])
-            @appendAsset name, text
-
-          else if language == "js" or language == "javascript"
-            @appendAsset "script.js", text
-
-          else if language == "html"
-            @appendAsset "markup.html", text
-
-          else if language == "css"
-            @appendAsset "style.css", text
-
-    # Do not add the token back for rendering if marked as `--hide`
-    unless hide or @isMeta()
+    # some code blocks are capture but not shown
+    if !hide
       @tokens.push token
 
 
