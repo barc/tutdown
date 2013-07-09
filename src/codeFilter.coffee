@@ -47,7 +47,7 @@ filters =
       fs.writeFile pumlfile, uml, "utf8", (err) ->
         return cb(err) if err
 
-        jarfile = npath.resolve(__dirname + "/../bin/plantuml 2.jar")
+        jarfile = npath.resolve(__dirname + "/../bin/plantuml.jar")
 
         cmd = spawn("java", ["-jar", jarfile, "-tsvg", "-o", npath.dirname(outfile),  pumlfile])
 
@@ -90,7 +90,7 @@ filters =
       fs.writeFile pumlfile, uml, "utf8", (err) ->
         return cb(err) if err
 
-        jarfile = npath.resolve(__dirname + "/../bin/plantuml 2.jar")
+        jarfile = npath.resolve(__dirname + "/../bin/plantuml.jar")
 
         cmd = spawn("java", ["-jar", jarfile, "-tutxt", "-o", npath.dirname(outfile),  pumlfile])
 
