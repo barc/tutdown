@@ -63,6 +63,9 @@ fixCoffeeComments = (source, commentFiller) ->
 
   result.join "\n"
 
+isStatic = (str) ->
+  str.indexOf('.prototype.') < 0 and str.indexOf('this.') < 0
+
 
 createNav = (t, data) ->
   {json, options} = data
@@ -79,7 +82,7 @@ createNav = (t, data) ->
     t.ul class:"methods", ->
       for item in section.slice(1)
         if item.ctx
-          isClassMethod = item.ctx.string.indexOf('.prototype.') < 0 and item.ctx.string.indexOf('this.') < 0
+          isClassMethod = isStatic(item.ctx.string)
           itemName = item.ctx.name
           t.li ->
             attrs = href:"##{headerItemName}-#{item.ctx.name}"
@@ -103,7 +106,7 @@ createContent = (t, data) ->
       t.raw headerItem.description.full
       for item in section.slice(1)
         if item.ctx
-          isClassMethod = item.ctx.string.indexOf('.prototype.') < 0
+          isClassMethod = isStatic(item.ctx.string)
           itemName = item.ctx.name
           attrs = id:"#{headerItemName}-#{itemName}"
           if isClassMethod
