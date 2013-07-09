@@ -29,7 +29,7 @@ filters =
   # Highlights HTML code
   html: (source, options, cb) ->
     setImmediate ->
-      highlighted = hjs.highlight("xml", source).value
+      highlighted = hjs.highlight("html", source).value
       cb null, highlighted
 
 

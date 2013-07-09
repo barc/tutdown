@@ -9,7 +9,7 @@
   "dependencies": {
     "async": "~0.2.8",
     "commander": "~1.1.1",
-    "highlight.js": "~7.3.0",
+    "highlight.js": "git://github.com/mgutz/highlight.js",
     "underscore": "~1.4.4",
     "temp": "~0.5.0",
     "marked": "git://github.com/mgutz/marked",
