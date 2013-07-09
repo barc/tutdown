@@ -28,9 +28,10 @@ filters =
       highlighted = hjs.highlight("xml", source).value
       cb null, highlighted
 
+
   # Creates UT8 Diagrams from PlantUML
-  uml: (source, args, cb) ->
-    title = args[0] || ""
+  uml: (source, options, cb) ->
+    title = options.title || ""
 
     pumlfile = temp.path(prefix: "tutdown-", suffix: ".puml")
     outfile = temp.path(prefix: "tutdown-", suffix: ".utf8")
@@ -73,17 +74,10 @@ filters =
 filters.javascript = filters.js
 filters.xml = filters.html
 
-filter = (source, language, cb) ->
-  if language
-    language = language.trim()
-    parts = utils.parseLineArgs language
-    if parts.length > 0
-      language = parts[0]
-      args = parts.slice(1)
-
-  filter = filters[language]
+filter = (source, options, cb) ->
+  filter = filters[options.language]
   if filter
-    filter source, args, cb
+    filter source, options, cb
   else
     cb null
 

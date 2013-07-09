@@ -1,6 +1,5 @@
 marked = require("marked")
 hjs = require("highlight.js")
-codeFilter = require("./codeFilter")
 async = require("async")
 _ = require("underscore")
 utils = require("./utils")

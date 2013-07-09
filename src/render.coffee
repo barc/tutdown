@@ -76,14 +76,14 @@ renderAssets = (id, assets, layout, iframeAttributes, cb) ->
 
     if name is "code" or str.endsWith(name, ".js")
       content = beautifyJs(content, indent_size: 2)
-      content = codeFilter(content, "js", saveResult('js'))
+      content = codeFilter(content, {language: "js"}, saveResult('js'))
     else if name  is "markup" or str.endsWith(name, ".html")
       content = _.template(layout, {markup: content, id})
       content = beautifyHtml(content, indent_size: 2)
-      content = codeFilter(content, "html", saveResult('html'))
+      content = codeFilter(content, {language: "html"}, saveResult('html'))
     else if name is "style" or str.endsWith(name, ".css")
       content = beautifyCss(content, indent_size: 2)
-      content = codeFilter(content, "css", saveResult("css"))
+      content = codeFilter(content, {language: "css"}, saveResult("css"))
 
   async.forEach Object.keys(assets), processAsset, (err) ->
     return cb(err) if err
@@ -139,7 +139,7 @@ exports.renderTokens = (tokens, cb) ->
     token?.type == "code"
 
   filterCode = (token, cb) ->
-    codeFilter token.text, token.lang, (err, result) ->
+    codeFilter token.text, {language: token.lang}, (err, result) ->
       return cb(err) if err
 
       if _.isString(result)
