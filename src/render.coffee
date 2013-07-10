@@ -78,7 +78,7 @@ renderAssets = (id, assets, layout, iframeAttributes, cb) ->
       content = beautifyJs(content, indent_size: 2)
       content = codeFilter(content, {language: "js"}, saveResult('js'))
     else if name  is "markup" or str.endsWith(name, ".html")
-      content = _.template(layout, {markup: content, id})
+      content = renderMarkup(layout, id, assets)
       content = beautifyHtml(content, indent_size: 2)
       content = codeFilter(content, {language: "html"}, saveResult('html'))
     else if name is "style" or str.endsWith(name, ".css")
@@ -90,6 +90,18 @@ renderAssets = (id, assets, layout, iframeAttributes, cb) ->
 
     result = _.template(assetsTemplate, {id, tabLinks, tabDivs})
     cb null, result
+
+
+renderMarkup = (layout, id, assets) ->
+  stylesheets = ""
+  scripts = ""
+  for name of assets
+    if str.endsWith(name, ".css")
+      stylesheets += "<link rel='stylesheet' type='text/css' href='#{id}-#{name}' />"
+    else if str.endsWith(name, ".js")
+      scripts += "<script type='text/javascript' src='#{id}-#{name}'></script>"
+
+  page = _.template(layout, {markup: assets['markup.html'], stylesheets, scripts})
 
 
 # Returns an iframe token to be inserted into documented.  Iframe's do not load without a 'src' element.
@@ -113,7 +125,7 @@ exports.renderExample = (section, layout, cb) ->
     return cb(err) if (err)
 
     token = utils.rawToken(html)
-    page = _.template(layout, {markup: assets['markup.html'], iframeAttributes, id})
+    page = renderMarkup(layout, id, assets )
     cb null, [token, page]
 
 
