@@ -56,7 +56,7 @@ renderAssets = (id, assets, layout, iframeAttributes, cb) ->
     id: id
     name: "result"
     idname: str.slugify(id + "result")
-    content: """<iframe id="#{id}" src="_assets/#{idOrig}.html" class="result" #{iframeAttributes}></iframe>"""
+    content: """<iframe id="#{id}" src="assets/#{idOrig}.html" class="result" #{iframeAttributes}></iframe>"""
   })
 
   codeTemplate = """<pre><code class="language-{{{lang}}}">{{{code}}}</code></pre>"""

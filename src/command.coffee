@@ -24,7 +24,7 @@ parseArgs = ->
 # Renders HTML file from Tutdown markup.
 renderFile = (inputFilename, outputFilename, layoutFile, cb) ->
   # Write assets relative to file in _assets folder
-  assetsDirname = npath.join(npath.dirname(npath.resolve(outputFilename)), '_assets')
+  assetsDirname = npath.join(npath.dirname(npath.resolve(outputFilename)), 'assets')
   assetPrefix = npath.basename(inputFilename, npath.extname(inputFilename))
   renderer = new DefaultRenderer({assetsDirname, assetPrefix, docLayoutFile: layoutFile})
 
