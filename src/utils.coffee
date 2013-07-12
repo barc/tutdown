@@ -39,3 +39,10 @@ exports.rawToken = (text) ->
   type: "html"
   pre: true                       # inserts raw text as side-effect
   text:  text
+
+
+exports.between = (s, left, right) ->
+  startPos = s.indexOf(left)
+  endPos = s.indexOf(right)
+  start = startPos + left.length
+  if endPos > startPos then s.slice(start, endPos) else ""

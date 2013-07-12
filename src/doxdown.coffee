@@ -4,6 +4,8 @@ dox = require("dox")
 Funcd = require("funcd")
 _ = require("underscore")
 _.str = require("underscore.string")
+utils = require("./utils")
+codeFilter = require("./codeFilter")
 
 exports.renderFromFile = (fileName, options = {}, cb) ->
   if typeof options is "function"
@@ -26,7 +28,10 @@ exports.render = (source, options = {}, cb) ->
     js = source
 
   json = dox.parseComments(js)
-  #fs.writeFileSync "dox.json", JSON.stringify(json, null, 2)
+
+  if options.debug
+    fs.writeFileSync "dox.json", JSON.stringify(json, null, 2)
+
   exports.renderFromDoxJSON json, options, cb
 
 exports.renderFromDoxJSON = (json, options = {}, cb) ->
@@ -87,7 +92,18 @@ createNav = (t, data) ->
           t.li ->
             attrs = href:"##{headerItemName}-#{item.ctx.name}"
             attrs.class = "static" if isClassMethod
+
             t.a attrs, itemName
+  null
+
+
+formatBody = (body) ->
+  if body.indexOf('<pre><code>') >= 0
+    body = utils.between(body, '<pre><code>', '</code></pre>')
+    body = codeFilter(body, language: 'js')
+    "<pre><code>#{body}</code></pre>"
+  else
+    body
 
 createContent = (t, data) ->
   {json, options} = data
@@ -103,7 +119,12 @@ createContent = (t, data) ->
       t.h2 id:"#{headerItemName}", ->
         t.text headerItemName
         t.span class:"caption", getCaption(headerItem, headerItem)
-      t.raw headerItem.description.full
+
+      t.raw headerItem.description.summary.replace(/\<br \/\>/g, ' ')
+      if headerItem.description.body
+        body = formatBody(headerItem.description.body)
+        t.raw body
+
       for item in section.slice(1)
         if item.ctx
           isClassMethod = isStatic(item.ctx.string)
@@ -114,7 +135,12 @@ createContent = (t, data) ->
           t.h3 attrs, ->
             t.text itemName
             t.span class:"caption", getCaption(item, headerItem)
-        t.raw item.description.full
+
+        t.raw item.description.summary.replace(/\<br \/\>/g, ' ')
+        if item.description.body
+          body = formatBody(item.description.body)
+          t.raw body
+  null
 
 
 getSections = (json) ->

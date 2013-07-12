@@ -15,9 +15,11 @@ setImmediate = (fn) ->
 filters =
   # Highlights JavaScript code
   js: (source, options, cb) ->
-    setImmediate ->
-      highlighted = hjs.highlight("javascript", source).value
-      cb null, highlighted
+    highlighted = hjs.highlight("javascript", source).value
+    if cb
+      return cb(null, highlighted)
+    else
+      return highlighted
 
 
   # Highlights CSS code
@@ -119,12 +121,19 @@ filters.uml = filters.umlSvg
 filters.javascript = filters.js
 filters.xml = filters.html
 
+# TODO: Sync is only safe with `js`, made doxdown work
 filter = (source, options, cb) ->
   filter = filters[options.language]
   if filter
-    filter source, options, cb
+    if cb
+        filter source, options, cb
+    else
+        filter source, options
   else
-    cb null
+    if cb
+      cb null
+    else
+      null
 
 module.exports = filter
 
