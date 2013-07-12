@@ -100,6 +100,7 @@ createNav = (t, data) ->
 formatBody = (body) ->
   if body.indexOf('<pre><code>') >= 0
     body = utils.between(body, '<pre><code>', '</code></pre>')
+    body = _.str.unescapeHTML(body)
     body = codeFilter(body, language: 'js')
     "<pre><code>#{body}</code></pre>"
   else
