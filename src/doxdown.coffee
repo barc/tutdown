@@ -97,14 +97,19 @@ createNav = (t, data) ->
   null
 
 
-formatBody = (body) ->
-  if body.indexOf('<pre><code>') >= 0
-    body = utils.between(body, '<pre><code>', '</code></pre>')
-    body = _.str.unescapeHTML(body)
-    body = codeFilter(body, language: 'js')
-    "<pre><code>#{body}</code></pre>"
-  else
-    body
+# Reformats code blocks and removes hard breaks.
+#
+# TODO: this should not have to be done if dox parses in raw mode,
+# refactor code later
+reformatDoxDescription = (body) ->
+  regex = /(<pre><code>(.|\n)*?)<\/code><\/pre>/gm
+  body = body.replace regex, (found, pos) ->
+    code =  utils.between(found, '<pre><code>', '</code></pre>')
+    code = _.str.unescapeHTML(code)
+    code = codeFilter(code, language: 'js')
+    "<pre><code>#{code}</code></pre>"
+  body = body.replace(/<br \/>/g, ' ')
+
 
 createContent = (t, data) ->
   {json, options} = data
@@ -121,10 +126,7 @@ createContent = (t, data) ->
         t.text headerItemName
         t.span class:"caption", getCaption(headerItem, headerItem)
 
-      t.raw headerItem.description.summary.replace(/\<br \/\>/g, ' ')
-      if headerItem.description.body
-        body = formatBody(headerItem.description.body)
-        t.raw body
+      t.raw reformatDoxDescription(headerItem.description.full)
 
       for item in section.slice(1)
         if item.ctx
@@ -136,11 +138,7 @@ createContent = (t, data) ->
           t.h3 attrs, ->
             t.text itemName
             t.span class:"caption", getCaption(item, headerItem)
-
-        t.raw item.description.summary.replace(/\<br \/\>/g, ' ')
-        if item.description.body
-          body = formatBody(item.description.body)
-          t.raw body
+        t.raw reformatDoxDescription(item.description.full)
   null
 
 
