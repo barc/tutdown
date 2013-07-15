@@ -12,7 +12,11 @@ beautifyHtml = require('js-beautify').html
 # Render assets
 #
 # TODO output as separate files for server side testing
-renderAssets = (id, assets, layout, iframeAttributes, cb) ->
+#renderAssets = (id, assets, layout, iframeAttributes, cb) ->
+renderAssets = (id, assets, options, cb) ->
+  layout = options.templates.example
+  iframeAttributes = options.exampleAttributes
+
   idOrig = id
   id = id.toLowerCase()
   assetId = 0
@@ -106,10 +110,13 @@ renderMarkup = (layout, id, assets) ->
 
 # Returns an iframe token to be inserted into documented.  Iframe's do not load without a 'src' element.
 # The return script must be executed by the main page to load the iframe.
-exports.renderExample = (section, layout, cb) ->
+#exports.renderExample = (section, layout, cb) ->
+exports.renderExample = (section, options, cb) ->
+  options = _.clone(options)
+
   {id, assets} = section
   exampleRegex = /^{{{EXAMPLE([^}]*)}}}/
-  iframeAttributes = ""
+  attributes = ""
 
   # replace {{{EXAMPLE}}} token or append it
   _.find section.tokens, (tok) ->
@@ -117,15 +124,18 @@ exports.renderExample = (section, layout, cb) ->
     if tok.type != 'code'
       matches = tok.text?.match(exampleRegex)
       if matches
-        iframeAttributes = matches[1]
+        attributes = matches[1]
         result = true
     result
 
-  renderAssets id, assets, layout, iframeAttributes, (err, html) ->
+  options.exampleAttributes = attributes
+
+  #renderAssets id, assets, layout, attributes, (err, html) ->
+  renderAssets id, assets, options, (err, html) ->
     return cb(err) if (err)
 
     token = utils.rawToken(html)
-    page = renderMarkup(layout, id, assets )
+    page = renderMarkup(options.templates.example, id, assets )
     cb null, [token, page]
 
 
@@ -142,7 +152,10 @@ parse = (tokens) ->
   marked.Parser.parse(tokens, options)
 
 
-exports.renderTokens = (tokens, cb) ->
+#exports.renderTokens = (tokens, cb) ->
+exports.renderTokens = (tokens, options, cb) ->
+  options = _.clone(options)
+
   # Satisfies marked interface
   if not tokens.links
     tokens.links = []
@@ -151,7 +164,11 @@ exports.renderTokens = (tokens, cb) ->
     token?.type == "code"
 
   filterCode = (token, cb) ->
-    codeFilter token.text, {language: token.lang}, (err, result) ->
+    lang = token.lang
+    opts = language: lang
+    opts.template = options.templates[lang] if options.templates[lang]?
+
+    codeFilter token.text, opts, (err, result) ->
       return cb(err) if err
 
       if _.isString(result)
@@ -170,5 +187,4 @@ exports.renderTokens = (tokens, cb) ->
   async.forEach codeTokens, filterCode, (err) ->
     return cb(err) if err
     cb null, parse(tokens)
-
 

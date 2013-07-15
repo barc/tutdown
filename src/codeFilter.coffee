@@ -7,7 +7,6 @@ utils = require("./utils")
 _ = require("underscore")
 
 
-umlSvgTemplate = fs.readFileSync("#{__dirname}/../src/templates/uml.mustache", "utf8")
 
 setImmediate = (fn) ->
   process.nextTick fn
@@ -43,7 +42,7 @@ filters =
     outfile = temp.path(prefix: "tutdown-", suffix: ".utf8")
     # filename = "1.png"
     setImmediate ->
-      uml = _.template(umlSvgTemplate, filename: npath.basename(outfile), source: source)
+      uml = _.template(options.template, filename: npath.basename(outfile), source: source)
 
       # TODO can't make pipes work, shouldn't have to create a temporary file
       fs.writeFile pumlfile, uml, "utf8", (err) ->

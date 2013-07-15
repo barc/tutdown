@@ -16,11 +16,10 @@ class DefaultRenderer
     _.defaults @options,
       docStylesheetFile: __dirname + '/../lib/assets/style.css'
       docScriptFile: __dirname + '/../src/assets/tabs.js'
-      exampleLayoutFile: __dirname + '/../src/templates/example.hbs'
 
     @docScript = fs.readFileSync(@options.docScriptFile, "utf8")
     @docStylesheet = fs.readFileSync(@options.docStylesheetFile, "utf8")
-    @exampleLayout = fs.readFileSync(@options.exampleLayoutFile, "utf8")
+    @exampleLayout = @options.templates?.example || fs.readFileSync(__dirname + '/../src/templates/example.hbs', 'utf8')
 
     if @options.docLayoutFile
       @docLayout = fs.readFileSync(@options.docLayoutFile, "utf8")
@@ -28,6 +27,8 @@ class DefaultRenderer
       @docLayout = "{{{document}}}"
 
     mkdir @options.assetsDirname
+
+    @umlTemplate = @options.templates?.uml || fs.readFileSync("#{__dirname}/../src/templates/uml.mustache", "utf8")
 
 
   # Persist all assets in sections to a directory on the file system.
@@ -42,13 +43,19 @@ class DefaultRenderer
 
   # Renders a section
   renderSection: (section, cb) =>
+
     dirname = @options.assetsDirname
-    exampleLayout = @exampleLayout
+    that = @
 
     @persistAssets section, (err) ->
       return cb(err) if err
 
-      render.renderExample section, exampleLayout, (err, result) ->
+      opts =
+        templates:
+          example: that.exampleLayout
+          uml: that.umlTemplate
+
+      render.renderExample section, opts, (err, result) ->
         return cb(err) if err
         exampleRegex = /^{{{EXAMPLE([^}]*)}}}/
 
@@ -66,7 +73,7 @@ class DefaultRenderer
           else
             section.tokens.push token
 
-          render.renderTokens section.tokens, (err, html) ->
+          render.renderTokens section.tokens, opts, (err, html) ->
             return cb(err) if err
             section.html = html
             cb()
@@ -91,10 +98,14 @@ class DefaultRenderer
 
   _render: (tokens, sections, cb) ->
     self = @
+    opts =
+      templates:
+        uml: @umlTemplate
+
 
     # as sections were processed above, {{{sections[id].html}}} placeholders were
     # inserted creating a template
-    render.renderTokens tokens, (err, template) ->
+    render.renderTokens tokens, opts, (err, template) ->
       return cb(err) if err
 
       async.forEach _.values(sections), self.renderSection, (err) ->
