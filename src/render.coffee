@@ -83,7 +83,8 @@ renderAssets = (id, assets, options, cb) ->
       content = codeFilter(content, {language: "js"}, saveResult('js'))
     else if name  is "markup" or str.endsWith(name, ".html")
       content = renderMarkup(layout, id, assets)
-      content = beautifyHtml(content, indent_size: 2)
+      # HTML beautify has problems
+      #content = beautifyHtml(content, indent_size: 2)
       content = codeFilter(content, {language: "html"}, saveResult('html'))
     else if name is "style" or str.endsWith(name, ".css")
       content = beautifyCss(content, indent_size: 2)

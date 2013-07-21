@@ -14,8 +14,8 @@ exports.project = (pm) ->
   scripts:
     files: "src/**/*.coffee"
     dev: [
-      f.coffee
-      addHeader
+      f.coffee bare:true, sourceMap: true
+      #addHeader
       f.writeFile toLib
     ]
 
