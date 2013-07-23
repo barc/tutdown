@@ -1,5 +1,22 @@
 var DefaultRenderer = require("./lib/defaultRenderer")
 var Doxdown = require("./lib/doxdown");
+var Path = require("path");
+var Fs = require("fs");
+
+
+function updatePartials(markdown, root) {
+  if (markdown.indexOf(':::>') >= 0) {
+    markdown = markdown.replace(/:::>(.*)/g, function(found) {
+      var file = Path.resolve(Path.join(root, found.substring(4).trim()));
+      if (Fs.existsSync(file)) {
+        return Fs.readFileSync(file, 'utf8');
+      }
+      return found;
+    });
+  }
+  return markdown;
+}
+
 
 module.exports = {
   /**
@@ -16,6 +33,7 @@ module.exports = {
    */
   render: function(markdown, options, cb) {
     var renderer = new DefaultRenderer(options);
+    markdown = updatePartials(markdown, Path.dirname(options.filename));
     renderer.render(markdown, cb);
   },
 
