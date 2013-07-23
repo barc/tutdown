@@ -54,6 +54,8 @@ class DefaultRenderer
         templates:
           example: that.exampleLayout
           uml: that.umlTemplate
+        assetsDirname: dirname
+
 
       render.renderExample section, opts, (err, result) ->
         return cb(err) if err
@@ -101,6 +103,7 @@ class DefaultRenderer
     opts =
       templates:
         uml: @umlTemplate
+      assetsDirname: @options.assetsDirname
 
 
     # as sections were processed above, {{{sections[id].html}}} placeholders were

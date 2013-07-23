@@ -8,6 +8,7 @@ fs = require("fs")
 beautifyJs = require('js-beautify')
 beautifyCss = require('js-beautify').css
 beautifyHtml = require('js-beautify').html
+npath = require('path')
 
 # Render assets
 #
@@ -16,6 +17,7 @@ beautifyHtml = require('js-beautify').html
 renderAssets = (id, assets, options, cb) ->
   layout = options.templates.example
   iframeAttributes = options.exampleAttributes
+  outDirname = npath.basename(options.assetsDirname)
 
   idOrig = id
   id = id.toLowerCase()
@@ -60,7 +62,7 @@ renderAssets = (id, assets, options, cb) ->
     id: id
     name: "result"
     idname: str.slugify(id + "result")
-    content: """<iframe id="#{id}" src="assets/#{idOrig}.html" class="result" #{iframeAttributes}></iframe>"""
+    content: """<iframe id="#{id}" src="#{outDirname}/#{idOrig}.html" class="result" #{iframeAttributes}></iframe>"""
   })
 
   codeTemplate = """<pre><code class="language-{{{lang}}}">{{{code}}}</code></pre>"""
