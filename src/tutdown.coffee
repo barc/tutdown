@@ -94,9 +94,11 @@ class Tutdown
 
             # insert a placeholder for this section
             tokenStack.push
-              text: "{{{sections.#{section.id}.html}}}"
-              type: "text"
-              escaped: true
+              #text: "{{{sections[\"#{section.id}\"].html}}}"
+              text: "{{{sections['#{section.id}'].html}}}"
+              type: "html"
+              pre: true
+
             section = null
             cb()
 
